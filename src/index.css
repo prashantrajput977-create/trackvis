@@ -8,16 +8,16 @@
   * { box-sizing: border-box; }
 }
 
-/* Scrollbar */
+/* ── Scrollbar ─────────────────────────────────────────────── */
 ::-webkit-scrollbar        { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track  { background: #0b0f1a; }
 ::-webkit-scrollbar-thumb  { background: #1e2a45; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #2d3f62; }
 
-/* Animations */
+/* ── Animations ────────────────────────────────────────────── */
 @keyframes fadeDown {
   from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0);    }
 }
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(52,211,153,.5); }
@@ -26,3 +26,9 @@
 
 .row-new    { animation: fadeDown .4s ease forwards; }
 .live-pulse { animation: pulse-dot 2s ease-in-out infinite; }
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.slide-in { animation: slideInDown 0.38s ease forwards; }

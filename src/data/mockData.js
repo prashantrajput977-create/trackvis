@@ -24,7 +24,8 @@ export const companies = [
     location: 'San Francisco, CA',
     country: 'United States',
     countryCode: 'US',
-    description: 'Stripe builds economic infrastructure for the internet. Businesses of every size use Stripe to accept payments, send payouts, and manage their businesses online.',
+    description:
+      'Stripe builds economic infrastructure for the internet. Businesses of every size—from new startups to public companies—use Stripe to accept payments, send payouts, and manage their businesses online.',
     founded: '2010',
     funding: '$2.2B raised · Series I',
     valuation: '$65B',
@@ -52,6 +53,7 @@ export const companies = [
       { id: 'ss7', timestamp: ago.day(7), duration: 305, source: 'LinkedIn', sourceColor: '#0a66c2', pages: ['/integrations', '/docs'], city: 'San Francisco', countryCode: 'US' },
     ],
   },
+
   {
     id: 'notion',
     name: 'Notion Labs',
@@ -62,7 +64,8 @@ export const companies = [
     location: 'San Francisco, CA',
     country: 'United States',
     countryCode: 'US',
-    description: 'Notion is the connected workspace where better, faster work happens. Notion combines notes, docs, wikis, and project management into one tool, used by millions of teams worldwide.',
+    description:
+      'Notion is the connected workspace where better, faster work happens. Notion combines notes, docs, wikis, and project management into one tool, used by millions of teams worldwide.',
     founded: '2016',
     funding: '$275M raised · Series C',
     valuation: '$10B',
@@ -86,6 +89,7 @@ export const companies = [
       { id: 'ss11', timestamp: ago.day(3), duration: 122, source: 'Direct', sourceColor: '#475569', pages: ['/'], city: 'San Francisco', countryCode: 'US' },
     ],
   },
+
   {
     id: 'linear',
     name: 'Linear',
@@ -96,7 +100,8 @@ export const companies = [
     location: 'San Francisco, CA',
     country: 'United States',
     countryCode: 'US',
-    description: 'Linear is the issue tracking tool that sets the standard for modern software development. Built for speed and efficiency, used by thousands of high-growth engineering teams.',
+    description:
+      'Linear is the issue tracking tool that sets the standard for modern software development. Built for speed and efficiency, Linear is used by thousands of high-growth engineering teams.',
     founded: '2019',
     funding: '$52M raised · Series B',
     valuation: '$400M',
@@ -119,6 +124,7 @@ export const companies = [
       { id: 'ss14', timestamp: ago.day(3), duration: 298, source: 'Hacker News', sourceColor: '#f26522', pages: ['/features', '/integrations', '/pricing'], city: 'Helsinki', countryCode: 'FI' },
     ],
   },
+
   {
     id: 'vercel',
     name: 'Vercel',
@@ -129,7 +135,8 @@ export const companies = [
     location: 'San Francisco, CA',
     country: 'United States',
     countryCode: 'US',
-    description: 'Vercel is the platform for frontend developers, providing the speed and reliability innovators need to create at the moment of inspiration. Deploy web apps instantly and scale globally.',
+    description:
+      'Vercel is the platform for frontend developers, providing the speed and reliability innovators need to create at the moment of inspiration. Deploy web apps instantly and scale globally.',
     founded: '2015',
     funding: '$313M raised · Series D',
     valuation: '$2.5B',
@@ -152,6 +159,7 @@ export const companies = [
       { id: 'ss17', timestamp: ago.day(4), duration: 267, source: 'GitHub', sourceColor: '#24292e', pages: ['/integrations', '/docs'], city: 'San Francisco', countryCode: 'US' },
     ],
   },
+
   {
     id: 'figma',
     name: 'Figma',
@@ -162,7 +170,8 @@ export const companies = [
     location: 'San Francisco, CA',
     country: 'United States',
     countryCode: 'US',
-    description: 'Figma is a collaborative interface design tool that brings product teams together in one place. From wireframes to handoff, Figma covers the entire design workflow.',
+    description:
+      'Figma is a collaborative interface design tool that brings product teams together in one place. From wireframes to handoff, Figma covers the entire design workflow.',
     founded: '2012',
     funding: '$333M raised · Series F',
     valuation: '$20B',
@@ -184,6 +193,7 @@ export const companies = [
       { id: 'ss19', timestamp: ago.day(2), duration: 145, source: 'Twitter / X', sourceColor: '#000000', pages: ['/features'], city: 'San Francisco', countryCode: 'US' },
     ],
   },
+
   {
     id: 'datadog',
     name: 'Datadog',
@@ -194,7 +204,8 @@ export const companies = [
     location: 'New York, NY',
     country: 'United States',
     countryCode: 'US',
-    description: 'Datadog is the observability and security platform for cloud applications. It monitors servers, databases, tools, and services through a SaaS-based analytics platform.',
+    description:
+      'Datadog is the observability and security platform for cloud applications. The SaaS-based data analytics platform monitors servers, databases, tools, and services through its integrations.',
     founded: '2010',
     funding: 'Public · NYSE: DDOG',
     valuation: '$38B market cap',
@@ -219,6 +230,7 @@ export const companies = [
       { id: 'ss23', timestamp: ago.day(3), duration: 198, source: 'LinkedIn', sourceColor: '#0a66c2', pages: ['/pricing'], city: 'New York', countryCode: 'US' },
     ],
   },
+
   {
     id: 'rippling',
     name: 'Rippling',
@@ -229,7 +241,8 @@ export const companies = [
     location: 'San Francisco, CA',
     country: 'United States',
     countryCode: 'US',
-    description: "Rippling makes it easy to manage employees' payroll, benefits, expenses, devices, apps, and more in one place. It automates every element of the employee lifecycle.",
+    description:
+      "Rippling makes it easy to manage employees' payroll, benefits, expenses, devices, apps, and more—in one place. From onboarding to offboarding, Rippling automates every element of the employee lifecycle.",
     founded: '2016',
     funding: '$1.2B raised · Series D',
     valuation: '$13.4B',
@@ -250,6 +263,7 @@ export const companies = [
       { id: 'ss25', timestamp: ago.day(2), duration: 123, source: 'Google', sourceColor: '#4285f4', pages: ['/integrations'], city: 'San Francisco', countryCode: 'US' },
     ],
   },
+
   {
     id: 'intercom',
     name: 'Intercom',
@@ -260,7 +274,8 @@ export const companies = [
     location: 'Dublin, Ireland',
     country: 'Ireland',
     countryCode: 'IE',
-    description: 'Intercom is the complete AI-first customer service platform, giving exceptional experiences for support teams with AI agent, AI copilot, tickets, phone and more.',
+    description:
+      'Intercom is the only complete AI-first customer service platform, giving exceptional experiences for support teams with AI agent, AI copilot, tickets, phone & more.',
     founded: '2011',
     funding: '$241M raised · Series D',
     valuation: '$1.3B',
@@ -283,6 +298,7 @@ export const companies = [
       { id: 'ss28', timestamp: ago.day(4), duration: 312, source: 'Direct', sourceColor: '#475569', pages: ['/security', '/integrations', '/pricing'], city: 'Dublin', countryCode: 'IE' },
     ],
   },
+
   {
     id: 'mixpanel',
     name: 'Mixpanel',
@@ -293,7 +309,8 @@ export const companies = [
     location: 'San Francisco, CA',
     country: 'United States',
     countryCode: 'US',
-    description: 'Mixpanel is a product analytics platform that helps companies make better decisions by measuring what matters, making informed decisions, and experimenting rapidly.',
+    description:
+      'Mixpanel is a product analytics platform that helps companies make better decisions by measuring what matters, making informed decisions, and experimenting rapidly.',
     founded: '2009',
     funding: '$77M raised · Series C',
     valuation: '$865M',
@@ -314,6 +331,7 @@ export const companies = [
       { id: 'ss30', timestamp: ago.day(1), duration: 78, source: 'Direct', sourceColor: '#475569', pages: ['/features'], city: 'San Francisco', countryCode: 'US' },
     ],
   },
+
   {
     id: 'atlassian',
     name: 'Atlassian',
@@ -324,7 +342,8 @@ export const companies = [
     location: 'Sydney, Australia',
     country: 'Australia',
     countryCode: 'AU',
-    description: 'Atlassian provides collaboration, development, and issue tracking software for teams. Products include Jira, Confluence, Trello, and Bitbucket, used by over 250,000 companies worldwide.',
+    description:
+      'Atlassian provides collaboration, development, and issue tracking software for teams. Products include Jira, Confluence, Trello, and Bitbucket, used by over 250,000 companies worldwide.',
     founded: '2002',
     funding: 'Public · NASDAQ: TEAM',
     valuation: '$48B market cap',
@@ -351,6 +370,7 @@ export const companies = [
   },
 ];
 
+// 15-day chart data (Mar 12 – Mar 26, 2026)
 export const chartData = [
   { label: 'Mar 12', date: '2026-03-12', visitors: 23, companies: 8 },
   { label: 'Mar 13', date: '2026-03-13', visitors: 31, companies: 11 },
@@ -366,18 +386,19 @@ export const chartData = [
   { label: 'Mar 23', date: '2026-03-23', visitors: 81, companies: 28 },
   { label: 'Mar 24', date: '2026-03-24', visitors: 76, companies: 26 },
   { label: 'Mar 25', date: '2026-03-25', visitors: 92, companies: 31 },
-  { label: 'Today',  date: '2026-03-26', visitors: 47, companies: 18 },
+  { label: 'Today', date: '2026-03-26', visitors: 47, companies: 18 },
 ];
 
 export const sourceBreakdown = [
-  { source: 'LinkedIn',     pct: 38, count: 142, color: '#0a66c2' },
-  { source: 'Google',       pct: 24, count: 90,  color: '#4285f4' },
-  { source: 'Direct',       pct: 18, count: 67,  color: '#475569' },
-  { source: 'Hacker News',  pct: 9,  count: 34,  color: '#f26522' },
-  { source: 'GitHub',       pct: 6,  count: 22,  color: '#24292e' },
-  { source: 'Product Hunt', pct: 5,  count: 19,  color: '#da552f' },
+  { source: 'LinkedIn', pct: 38, count: 142, color: '#0a66c2' },
+  { source: 'Google', pct: 24, count: 90, color: '#4285f4' },
+  { source: 'Direct', pct: 18, count: 67, color: '#475569' },
+  { source: 'Hacker News', pct: 9, count: 34, color: '#f26522' },
+  { source: 'GitHub', pct: 6, count: 22, color: '#24292e' },
+  { source: 'Product Hunt', pct: 5, count: 19, color: '#da552f' },
 ];
 
+// Recent activity feed (flat list of most recent sessions across companies)
 export const recentActivity = companies
   .flatMap((c) => c.sessions.map((s) => ({ ...s, company: c })))
   .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
@@ -392,20 +413,50 @@ export function timeAgo(iso) {
 }
 
 export function flag(cc) {
-  if (!cc) return '\uD83C\uDF10';
+  if (!cc) return '🌐';
   try {
     return [...cc.toUpperCase()].map((c) => String.fromCodePoint(c.charCodeAt(0) + 127397)).join('');
-  } catch { return '\uD83C\uDF10'; }
+  } catch {
+    return '🌐';
+  }
 }
 
 export function intentColor(intent) {
-  if (intent === 'High')   return { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20' };
-  if (intent === 'Medium') return { bg: 'bg-amber-500/10',   text: 'text-amber-400',   border: 'border-amber-500/20'   };
-  return                          { bg: 'bg-slate-500/10',   text: 'text-slate-400',   border: 'border-slate-500/20'   };
+  if (intent === 'High') return { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20' };
+  if (intent === 'Medium') return { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20' };
+  return { bg: 'bg-slate-500/10', text: 'text-slate-400', border: 'border-slate-500/20' };
 }
 
 export function scoreColor(score) {
   if (score >= 80) return 'text-emerald-400';
   if (score >= 60) return 'text-blue-400';
   return 'text-slate-400';
+}
+
+const LIVE_PAGES = ['/pricing', '/', '/features', '/integrations', '/demo', '/contact', '/docs', '/enterprise', '/security', '/blog/roi-guide'];
+const LIVE_SOURCES = [
+  { source: 'LinkedIn',     color: '#0a66c2' },
+  { source: 'Google',       color: '#4285f4' },
+  { source: 'Direct',       color: '#475569' },
+  { source: 'GitHub',       color: '#24292e' },
+  { source: 'Hacker News',  color: '#f26522' },
+  { source: 'Product Hunt', color: '#da552f' },
+];
+
+export function generateLiveVisitor() {
+  const company = companies[Math.floor(Math.random() * companies.length)];
+  const src     = LIVE_SOURCES[Math.floor(Math.random() * LIVE_SOURCES.length)];
+  const page    = LIVE_PAGES[Math.floor(Math.random() * LIVE_PAGES.length)];
+  return {
+    id:          `live-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    timestamp:   new Date().toISOString(),
+    duration:    30 + Math.floor(Math.random() * 420),
+    source:      src.source,
+    sourceColor: src.color,
+    pages:       [page],
+    city:        company.location.split(',')[0].trim(),
+    countryCode: company.countryCode,
+    isNew:       true,
+    company,
+  };
 }
