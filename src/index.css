@@ -26,3 +26,9 @@
 
 .row-new    { animation: fadeDown .4s ease forwards; }
 .live-pulse { animation: pulse-dot 2s ease-in-out infinite; }
+
+/* Sidebar nav active glow */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
