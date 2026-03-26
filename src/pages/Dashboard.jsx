@@ -1,6 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { companies, chartData, sourceBreakdown, recentActivity, timeAgo, flag, intentColor } from '../data/mockData';
+import {
+  companies, chartData, sourceBreakdown, recentActivity,
+  generateLiveVisitor, timeAgo, flag, intentColor,
+} from '../data/mockData';
 
 // ── Area chart ─────────────────────────────────────────────────────────────────
 function AreaChart({ data, metric }) {
@@ -27,7 +30,6 @@ function AreaChart({ data, metric }) {
   const areaPath = `${linePath} L ${pts[pts.length - 1].x},${pad.t + ch} L ${pts[0].x},${pad.t + ch} Z`;
   const gridVals = [0, 0.25, 0.5, 0.75, 1].map((pct) => ({ y: pad.t + ch * (1 - pct), val: Math.round(max * pct) }));
 
-  // Hover zone widths
   const zoneWidth = (i) => {
     if (data.length < 2) return cw;
     const prev = i > 0 ? (pts[i].x + pts[i - 1].x) / 2 : pts[0].x - 10;
@@ -50,7 +52,6 @@ function AreaChart({ data, metric }) {
           </linearGradient>
         </defs>
 
-        {/* Grid */}
         {gridVals.map(({ y, val }) => (
           <g key={val}>
             <line x1={pad.l} y1={y} x2={pad.l + cw} y2={y} stroke="#1e2a45" strokeWidth={1} />
@@ -60,11 +61,9 @@ function AreaChart({ data, metric }) {
           </g>
         ))}
 
-        {/* Area + line */}
         <path d={areaPath} fill="url(#chartGrad)" />
         <path d={linePath} fill="none" stroke="#3b82f6" strokeWidth={2.5} strokeLinecap="round" />
 
-        {/* Hover cursor line */}
         {hovered !== null && (
           <line
             x1={pts[hovered].x} y1={pad.t}
@@ -73,7 +72,6 @@ function AreaChart({ data, metric }) {
           />
         )}
 
-        {/* Hover zones + dots */}
         {pts.map((p, i) => {
           const z = zoneWidth(i);
           return (
@@ -87,7 +85,6 @@ function AreaChart({ data, metric }) {
           );
         })}
 
-        {/* X labels — every other */}
         {pts.map((p, i) =>
           i % 2 === 0 ? (
             <text key={i} x={p.x} y={H - 6} textAnchor="middle" fontSize={10} fill="#475569" fontFamily="DM Sans, sans-serif">
@@ -97,7 +94,6 @@ function AreaChart({ data, metric }) {
         )}
       </svg>
 
-      {/* Tooltip */}
       {hovered !== null && (
         <div
           className="absolute pointer-events-none bg-[#1a2235] border border-[#2d3f62] rounded-lg px-3 py-2 text-xs shadow-xl z-10"
@@ -153,13 +149,39 @@ function StatCard({ label, value, sub, delta, icon, accent = 'blue' }) {
 // ── Page ───────────────────────────────────────────────────────────────────────
 export default function Dashboard() {
   const [chartMetric, setChartMetric] = useState('visitors');
+  const [liveFeed, setLiveFeed] = useState(() => recentActivity.slice(0, 8));
+  const [selectedSource, setSelectedSource] = useState(null);
   const navigate = useNavigate();
+  const timerRef = useRef(null);
+
+  // Auto-update live feed every 5s
+  useEffect(() => {
+    timerRef.current = setInterval(() => {
+      const newEntry = generateLiveVisitor();
+      setLiveFeed((prev) => [newEntry, ...prev].slice(0, 10));
+      // Clear isNew flag after animation completes
+      setTimeout(() => {
+        setLiveFeed((prev) =>
+          prev.map((e) => e.id === newEntry.id ? { ...e, isNew: false } : e)
+        );
+      }, 800);
+    }, 5000);
+    return () => clearInterval(timerRef.current);
+  }, []);
 
   const todayVisitors = chartData[chartData.length - 1].visitors;
   const todayCompanies = chartData[chartData.length - 1].companies;
   const totalVisitors = chartData.reduce((s, d) => s + d.visitors, 0);
 
   const topCompanies = [...companies].sort((a, b) => b.totalVisits - a.totalVisits).slice(0, 5);
+
+  const filteredFeed = selectedSource
+    ? liveFeed.filter((a) => a.source === selectedSource)
+    : liveFeed;
+
+  function toggleSource(sourceName) {
+    setSelectedSource((prev) => (prev === sourceName ? null : sourceName));
+  }
 
   return (
     <div className="p-6 space-y-6 max-w-[1400px]">
@@ -262,36 +284,61 @@ export default function Dashboard() {
           <AreaChart data={chartData} metric={chartMetric} />
         </div>
 
-        {/* Traffic sources */}
+        {/* Traffic sources — clickable to filter feed */}
         <div className="bg-[#0f1623] border border-[#1e2a45] rounded-xl p-5">
-          <div className="mb-4">
-            <h2 className="text-sm font-semibold text-white">Traffic sources</h2>
-            <p className="text-xs text-slate-500 mt-0.5">Last 30 days</p>
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-semibold text-white">Traffic sources</h2>
+              <p className="text-xs text-slate-500 mt-0.5">Last 30 days · click to filter</p>
+            </div>
+            {selectedSource && (
+              <button
+                onClick={() => setSelectedSource(null)}
+                className="text-[11px] text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1"
+              >
+                Clear ✕
+              </button>
+            )}
           </div>
           <div className="space-y-3.5">
-            {sourceBreakdown.map((s) => (
-              <div key={s.source}>
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="w-2 h-2 rounded-sm shrink-0"
-                      style={{ background: s.color }}
+            {sourceBreakdown.map((s) => {
+              const isSelected = selectedSource === s.source;
+              const isDimmed = selectedSource && !isSelected;
+              return (
+                <button
+                  key={s.source}
+                  onClick={() => toggleSource(s.source)}
+                  className={`w-full text-left transition-opacity ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="w-2 h-2 rounded-sm shrink-0"
+                        style={{ background: s.color }}
+                      />
+                      <span className={`text-xs ${isSelected ? 'text-white font-medium' : 'text-slate-300'}`}>
+                        {s.source}
+                      </span>
+                      {isSelected && (
+                        <span className="text-[10px] text-blue-400 bg-blue-600/15 px-1.5 py-0.5 rounded-full border border-blue-600/20">
+                          filtered
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-slate-500 font-mono">{s.count}</span>
+                      <span className="text-xs text-slate-400 font-medium w-8 text-right">{s.pct}%</span>
+                    </div>
+                  </div>
+                  <div className="h-1.5 bg-[#1e2a45] rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{ width: `${s.pct}%`, background: s.color, opacity: isSelected ? 1 : 0.85 }}
                     />
-                    <span className="text-xs text-slate-300">{s.source}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-500 font-mono">{s.count}</span>
-                    <span className="text-xs text-slate-400 font-medium w-8 text-right">{s.pct}%</span>
-                  </div>
-                </div>
-                <div className="h-1.5 bg-[#1e2a45] rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all"
-                    style={{ width: `${s.pct}%`, background: s.color, opacity: 0.85 }}
-                  />
-                </div>
-              </div>
-            ))}
+                </button>
+              );
+            })}
           </div>
 
           <div className="mt-5 pt-4 border-t border-[#1e2a45]">
@@ -358,7 +405,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Recent activity */}
+        {/* Recent activity — live feed */}
         <div className="xl:col-span-2 bg-[#0f1623] border border-[#1e2a45] rounded-xl overflow-hidden">
           <div className="px-5 py-4 border-b border-[#1e2a45]">
             <div className="flex items-center justify-between">
@@ -368,32 +415,58 @@ export default function Dashboard() {
                 Live
               </span>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">Latest page visits</p>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {selectedSource ? (
+                <span>
+                  Filtered: <span className="text-blue-400">{selectedSource}</span>
+                  {' · '}
+                  <button onClick={() => setSelectedSource(null)} className="text-slate-500 hover:text-slate-300 underline">
+                    show all
+                  </button>
+                </span>
+              ) : (
+                'Latest page visits · updates every 5s'
+              )}
+            </p>
           </div>
           <div className="divide-y divide-[#1a2235] overflow-y-auto max-h-[340px]">
-            {recentActivity.map((a) => (
-              <div
-                key={a.id}
-                onClick={() => navigate(`/visitors/${a.company.id}`)}
-                className="flex items-start gap-3 px-5 py-3 hover:bg-[#131d2e] cursor-pointer transition-colors"
-              >
-                <div
-                  className="w-7 h-7 rounded-md flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5"
-                  style={{ background: a.company.logoColor + '22', color: a.company.logoColor }}
-                >
-                  {a.company.name[0]}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-slate-300 truncate">{a.company.name}</p>
-                  <p className="text-[11px] text-slate-600 truncate font-mono mt-0.5">
-                    {a.pages[0]}
-                  </p>
-                </div>
-                <span className="text-[11px] text-slate-600 whitespace-nowrap shrink-0 mt-0.5">
-                  {timeAgo(a.timestamp)}
-                </span>
+            {filteredFeed.length === 0 ? (
+              <div className="px-5 py-10 text-center text-slate-600 text-xs">
+                No activity from {selectedSource} yet.
               </div>
-            ))}
+            ) : (
+              filteredFeed.map((a) => (
+                <div
+                  key={a.id}
+                  onClick={() => navigate(`/visitors/${a.company.id}`)}
+                  className={`flex items-start gap-3 px-5 py-3 hover:bg-[#131d2e] cursor-pointer transition-colors${a.isNew ? ' slide-in' : ''}`}
+                >
+                  <div
+                    className="w-7 h-7 rounded-md flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5"
+                    style={{ background: a.company.logoColor + '22', color: a.company.logoColor }}
+                  >
+                    {a.company.name[0]}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-slate-300 truncate">{a.company.name}</p>
+                    <p className="text-[11px] text-slate-600 truncate font-mono mt-0.5">
+                      {a.pages[0]}
+                    </p>
+                    {a.source && (
+                      <span
+                        className="inline-block text-[10px] px-1.5 py-0.5 rounded mt-0.5 font-medium"
+                        style={{ background: (a.sourceColor || '#475569') + '22', color: a.sourceColor || '#94a3b8' }}
+                      >
+                        {a.source}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[11px] text-slate-600 whitespace-nowrap shrink-0 mt-0.5">
+                    {timeAgo(a.timestamp)}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

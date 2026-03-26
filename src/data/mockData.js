@@ -432,3 +432,31 @@ export function scoreColor(score) {
   if (score >= 60) return 'text-blue-400';
   return 'text-slate-400';
 }
+
+const LIVE_PAGES = ['/pricing', '/', '/features', '/integrations', '/demo', '/contact', '/docs', '/enterprise', '/security', '/blog/roi-guide'];
+const LIVE_SOURCES = [
+  { source: 'LinkedIn',     color: '#0a66c2' },
+  { source: 'Google',       color: '#4285f4' },
+  { source: 'Direct',       color: '#475569' },
+  { source: 'GitHub',       color: '#24292e' },
+  { source: 'Hacker News',  color: '#f26522' },
+  { source: 'Product Hunt', color: '#da552f' },
+];
+
+export function generateLiveVisitor() {
+  const company = companies[Math.floor(Math.random() * companies.length)];
+  const src     = LIVE_SOURCES[Math.floor(Math.random() * LIVE_SOURCES.length)];
+  const page    = LIVE_PAGES[Math.floor(Math.random() * LIVE_PAGES.length)];
+  return {
+    id:          `live-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    timestamp:   new Date().toISOString(),
+    duration:    30 + Math.floor(Math.random() * 420),
+    source:      src.source,
+    sourceColor: src.color,
+    pages:       [page],
+    city:        company.location.split(',')[0].trim(),
+    countryCode: company.countryCode,
+    isNew:       true,
+    company,
+  };
+}

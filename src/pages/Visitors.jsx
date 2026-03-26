@@ -1,8 +1,15 @@
-import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { companies, timeAgo, flag, intentColor, scoreColor, fmt } from '../data/mockData';
+import { useState, useMemo, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { companies, timeAgo, flag, intentColor, fmt } from '../data/mockData';
 
 const INTENT_OPTIONS = ['All', 'High', 'Medium', 'Low'];
+const DATE_RANGES = [
+  { key: 'all',   label: 'All time' },
+  { key: '7d',    label: 'Last 7 days' },
+  { key: '30d',   label: 'Last 30 days' },
+  { key: 'month', label: 'This month' },
+  { key: 'custom', label: 'Custom' },
+];
 
 function IntentBadge({ intent }) {
   const c = intentColor(intent);
@@ -38,12 +45,79 @@ function ScoreDot({ score }) {
   );
 }
 
+// Returns true if the company's lastSeen falls within the chosen date range
+function inDateRange(company, dateRange, customFrom, customTo) {
+  if (dateRange === 'all') return true;
+  const lastSeen = new Date(company.lastSeen);
+  const now = new Date();
+
+  if (dateRange === '7d') {
+    const cutoff = new Date(now);
+    cutoff.setDate(cutoff.getDate() - 7);
+    return lastSeen >= cutoff;
+  }
+  if (dateRange === '30d') {
+    const cutoff = new Date(now);
+    cutoff.setDate(cutoff.getDate() - 30);
+    return lastSeen >= cutoff;
+  }
+  if (dateRange === 'month') {
+    return lastSeen.getMonth() === now.getMonth() && lastSeen.getFullYear() === now.getFullYear();
+  }
+  if (dateRange === 'custom') {
+    const from = customFrom ? new Date(customFrom) : null;
+    const to = customTo ? new Date(customTo + 'T23:59:59') : null;
+    if (from && lastSeen < from) return false;
+    if (to && lastSeen > to) return false;
+    return true;
+  }
+  return true;
+}
+
+function exportCSV(rows) {
+  const headers = ['Company', 'Domain', 'Industry', 'Location', 'Visits', 'Avg Duration (s)', 'Last Seen', 'Score', 'Intent'];
+  const lines = [
+    headers.join(','),
+    ...rows.map((c) =>
+      [
+        `"${c.name}"`,
+        c.domain,
+        `"${c.industry}"`,
+        `"${c.location}"`,
+        c.totalVisits,
+        c.avgDuration,
+        c.lastSeen,
+        c.score,
+        c.intent,
+      ].join(',')
+    ),
+  ];
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'trackvis-visitors.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function Visitors() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
   const [search, setSearch] = useState('');
   const [intentFilter, setIntentFilter] = useState('All');
   const [sortField, setSortField] = useState('totalVisits');
   const [sortDir, setSortDir] = useState('desc');
+  const [dateRange, setDateRange] = useState('all');
+  const [customFrom, setCustomFrom] = useState('');
+  const [customTo, setCustomTo] = useState('');
+
+  // Sync search box from sidebar search URL param
+  useEffect(() => {
+    const q = searchParams.get('q');
+    if (q) setSearch(q);
+  }, [searchParams]);
 
   const filtered = useMemo(() => {
     let list = [...companies];
@@ -60,6 +134,7 @@ export default function Visitors() {
     if (intentFilter !== 'All') {
       list = list.filter((c) => c.intent === intentFilter);
     }
+    list = list.filter((c) => inDateRange(c, dateRange, customFrom, customTo));
     list.sort((a, b) => {
       let av = a[sortField], bv = b[sortField];
       if (sortField === 'lastSeen' || sortField === 'firstSeen') {
@@ -70,7 +145,7 @@ export default function Visitors() {
       return 0;
     });
     return list;
-  }, [search, intentFilter, sortField, sortDir]);
+  }, [search, intentFilter, sortField, sortDir, dateRange, customFrom, customTo]);
 
   function toggleSort(field) {
     if (sortField === field) setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'));
@@ -106,7 +181,10 @@ export default function Visitors() {
             Identified companies visiting your site
           </p>
         </div>
-        <button className="flex items-center gap-1.5 text-xs text-slate-400 bg-[#0f1623] border border-[#1e2a45] px-3 py-1.5 rounded-lg hover:border-slate-500 hover:text-white transition-colors">
+        <button
+          onClick={() => exportCSV(filtered)}
+          className="flex items-center gap-1.5 text-xs text-slate-400 bg-[#0f1623] border border-[#1e2a45] px-3 py-1.5 rounded-lg hover:border-slate-500 hover:text-white transition-colors"
+        >
           <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 fill-current">
             <path d="M8 11L4 7h3V1h2v6h3L8 11zM2 13h12v2H2v-2z" />
           </svg>
@@ -131,7 +209,7 @@ export default function Visitors() {
       {/* Table card */}
       <div className="bg-[#0f1623] border border-[#1e2a45] rounded-xl overflow-hidden">
         {/* Toolbar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5 border-b border-[#1e2a45]">
+        <div className="flex flex-wrap items-center gap-3 px-5 py-3.5 border-b border-[#1e2a45]">
           {/* Search */}
           <div className="relative">
             <svg viewBox="0 0 16 16" className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 fill-slate-500 pointer-events-none">
@@ -150,25 +228,60 @@ export default function Visitors() {
             )}
           </div>
 
-          {/* Intent filter */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs text-slate-600">Intent:</span>
-            {INTENT_OPTIONS.map((opt) => (
+          {/* Date range */}
+          <div className="flex items-center gap-1 bg-[#0b0f1a] border border-[#1e2a45] rounded-lg p-0.5">
+            {DATE_RANGES.map((r) => (
               <button
-                key={opt}
-                onClick={() => setIntentFilter(opt)}
-                className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
-                  intentFilter === opt
-                    ? 'bg-blue-600/15 text-blue-400 border-blue-600/25'
-                    : 'text-slate-500 border-transparent hover:border-[#1e2a45] hover:text-slate-300'
+                key={r.key}
+                onClick={() => setDateRange(r.key)}
+                className={`text-xs px-2.5 py-1 rounded-md font-medium transition-all whitespace-nowrap ${
+                  dateRange === r.key
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-500 hover:text-slate-300'
                 }`}
               >
-                {opt}
+                {r.label}
               </button>
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
+          {/* Custom date inputs */}
+          {dateRange === 'custom' && (
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={customFrom}
+                onChange={(e) => setCustomFrom(e.target.value)}
+                className="bg-[#0b0f1a] border border-[#1e2a45] rounded-lg px-2 py-1 text-xs text-slate-300 focus:outline-none focus:border-blue-600 transition-colors"
+              />
+              <span className="text-slate-600 text-xs">→</span>
+              <input
+                type="date"
+                value={customTo}
+                onChange={(e) => setCustomTo(e.target.value)}
+                className="bg-[#0b0f1a] border border-[#1e2a45] rounded-lg px-2 py-1 text-xs text-slate-300 focus:outline-none focus:border-blue-600 transition-colors"
+              />
+            </div>
+          )}
+
+          {/* Spacer + intent filter + count */}
+          <div className="flex items-center gap-3 ml-auto">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-slate-600">Intent:</span>
+              {INTENT_OPTIONS.map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => setIntentFilter(opt)}
+                  className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
+                    intentFilter === opt
+                      ? 'bg-blue-600/15 text-blue-400 border-blue-600/25'
+                      : 'text-slate-500 border-transparent hover:border-[#1e2a45] hover:text-slate-300'
+                  }`}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
             <span className="text-xs text-slate-600 font-mono">
               {filtered.length} of {companies.length}
             </span>
